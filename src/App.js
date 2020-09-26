@@ -73,14 +73,14 @@ class App extends Component {
         const text = 'Пользователь с именем ' + data['inputFirstName'] + ' успешно добавлен'
         this.setState({message: text})
         setTimeout(
-            () => this.setState({ message: '' }),
+            () => this.setState({message: ''}),
             3000
         );
         return 'OK'
     }
 
     clearForm(data) {
-        for (const prop in data) {
+        for (var prop in data) {
             this.setState({[prop]: ''})
         }
     }
@@ -88,17 +88,37 @@ class App extends Component {
     handleAddRow = (event) => {
         event.preventDefault()
         const {data, inputFirstName, inputLastName, inputEmail, inputId, inputPhone} = this.state
-        const formData = {'inputFirstName': inputFirstName, 'inputLastName': inputLastName, 'inputEmail': inputEmail, 'inputId': inputId, 'InputPhone': inputPhone }
+        const formData = {
+            'inputFirstName': inputFirstName,
+            'inputLastName': inputLastName,
+            'inputEmail': inputEmail,
+            'inputId': inputId,
+            'inputPhone': inputPhone
+        }
         const validate = this.validateRow(formData)
         if (validate === 'OK') {
-            data.push({'id': inputId, 'lastName': inputLastName, 'firstName': inputFirstName, 'email': inputEmail, 'phone': inputPhone})
+            data.push({
+                'id': inputId,
+                'lastName': inputLastName,
+                'firstName': inputFirstName,
+                'email': inputEmail,
+                'phone': inputPhone,
+                'description': 'eget porta magna in facilisis at placerat consequat placerat pulvinar sapien',
+                'address': {
+                    'city': 'Moscow',
+                    'state': 'RU',
+                    'streetAddress': '51 Paustovskogo street',
+                    'zip': '214304'
+                }
+            })
+            console.log(data)
             this.clearForm(formData)
+
         }
     }
 
 
-
-    getFilteredData(){
+    getFilteredData() {
 
         const {data, search, message} = this.state
 
@@ -112,7 +132,7 @@ class App extends Component {
                 item["email"].toLowerCase().includes(search.toLowerCase())
             );
         });
-        if(!result.length){
+        if (!result.length) {
             //this.setState({message: 'Nothing found, displayed all results'})
             console.log(message)
             alert('nothing found, displayed all results')
@@ -122,7 +142,6 @@ class App extends Component {
     }
 
 
-
     render() {
         const pageSize = 10;
 
@@ -130,63 +149,62 @@ class App extends Component {
         //console.log(filteredData)
         const pageCount = Math.ceil(filteredData.length / pageSize)
         const displayData = _.chunk(filteredData, pageSize)[this.state.currentPage]
-        console.log(displayData)
         return (
             <>
-            <div className="container">
-                {
-                    this.state.isLoading
-                        ? <Loader/>
-                        : <React.Fragment>
-                        <Input
-                            onSubmit={this.handleAddRow}
-                            onChange={this.handleChange}
-                            firstName={this.state.inputFirstName}
-                            LastName={this.state.inputLastName}
-                            Id={this.state.inputId}
-                            Email={this.state.inputEmail}
-                            Phone={this.state.inputPhone}
-                        />
-                        <div className={'warning'}>
-                            {this.state.message}
-                        </div>
-                            <TableSearch onSearch={this.searchHandler}/>
-                            <Table
-                                data={displayData}
-                                onSort={this.onSort}
-                                sort={this.state.sort}
-                                sortField={this.state.sortField}
-                                onRowSelect={this.onRowSelect}
-                            />
-                        </React.Fragment>
-                }
-                {this.state.data.length > pageSize
-                    ?
-                    <ReactPaginate
-                        previousLabel={'<'}
-                        nextLabel={'>'}
-                        breakLabel={'...'}
-                        breakClassName={'break-me'}
-                        pageCount={pageCount}
-                        marginPagesDisplayed={2}
-                        pageRangeDisplayed={5}
-                        onPageChange={this.pageChangeHandler}
-                        containerClassName={'pagination'}
-                        activeClassName={'active'}
-                        pageClassName="page-item"
-                        pageLinkClassName="page-link"
-                        previousClassName="page-item"
-                        nextClassName="page-item"
-                        previousLinkClassName="page-link"
-                        nextLinkClassName="page-link"
-                        forcePage={this.state.currentPage}
-                    /> : null
-                }
-                {
-                    this.state.row ? <DetailRowView person={this.state.row}/> : null
-                }
-            </div>
-                </>
+                <div className="container">
+                    {
+                        this.state.isLoading
+                            ? <Loader/>
+                            : <React.Fragment>
+                                <Input
+                                    onSubmit={this.handleAddRow}
+                                    onChange={this.handleChange}
+                                    firstName={this.state.inputFirstName}
+                                    LastName={this.state.inputLastName}
+                                    Id={this.state.inputId}
+                                    Email={this.state.inputEmail}
+                                    Phone={this.state.inputPhone}
+                                />
+                                <div className={'warning'}>
+                                    {this.state.message}
+                                </div>
+                                <TableSearch onSearch={this.searchHandler}/>
+                                <Table
+                                    data={displayData}
+                                    onSort={this.onSort}
+                                    sort={this.state.sort}
+                                    sortField={this.state.sortField}
+                                    onRowSelect={this.onRowSelect}
+                                />
+                            </React.Fragment>
+                    }
+                    {this.state.data.length > pageSize
+                        ?
+                        <ReactPaginate
+                            previousLabel={'<'}
+                            nextLabel={'>'}
+                            breakLabel={'...'}
+                            breakClassName={'break-me'}
+                            pageCount={pageCount}
+                            marginPagesDisplayed={2}
+                            pageRangeDisplayed={5}
+                            onPageChange={this.pageChangeHandler}
+                            containerClassName={'pagination'}
+                            activeClassName={'active'}
+                            pageClassName="page-item"
+                            pageLinkClassName="page-link"
+                            previousClassName="page-item"
+                            nextClassName="page-item"
+                            previousLinkClassName="page-link"
+                            nextLinkClassName="page-link"
+                            forcePage={this.state.currentPage}
+                        /> : null
+                    }
+                    {
+                        this.state.row ? <DetailRowView person={this.state.row}/> : null
+                    }
+                </div>
+            </>
         );
     }
 }
