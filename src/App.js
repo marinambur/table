@@ -5,6 +5,7 @@ import Loader from "./loader/Loader";
 import DetailRowView from './detailRowView/DetailRowView';
 import Table from "./table/Table";
 import _ from 'lodash';
+import ReactPaginate from 'react-paginate';
 
 class App extends Component {
 
@@ -26,24 +27,22 @@ class App extends Component {
         })
     }
     onSort = sortField => {
-
         const cloneData = this.state.data.concat();
-        const sortType = this.state.sort === 'asc' ? 'desc' : 'asc';
-        const orderedData = _.orderBy(cloneData, sortField, sortType);
-
-        this.setState({
-            data: orderedData,
-            sort: sortType,
-            sortField
-        })
+        const sort = this.state.sort === 'asc' ? 'desc' : 'asc';
+        const data = _.orderBy(cloneData, sortField, sort);
+        this.setState({ data, sort, sortField})
     }
 
     onRowSelect = row => (
         this.setState({row})
     )
 
+    pageChangeHandler = page => (
+        console.log(page)
+    )
 
     render() {
+        const pageSize = 10;
         return (
             <div className="container">
                 {
@@ -56,6 +55,29 @@ class App extends Component {
                             sortField={this.state.sortField}
                             onRowSelect={this.onRowSelect}
                         />
+
+
+                }
+                { this.state.data.length > pageSize
+                    ?
+                    <ReactPaginate
+                        previousLabel={'<'}
+                        nextLabel={'>'}
+                        breakLabel={'...'}
+                        breakClassName={'break-me'}
+                        pageCount={20}
+                        marginPagesDisplayed={2}
+                        pageRangeDisplayed={5}
+                        onPageChange={this.pageChangeHandler}
+                        containerClassName={'pagination'}
+                        activeClassName={'active'}
+                        pageClassName="page-item"
+                        pageLinkClassName="page-link"
+                        previousClassName="page-item"
+                        nextClassName="page-item"
+                        previousLinkClassName="page-link"
+                        nextLinkClassName="page-link"
+                    /> : null
                 }
                 {
                     this.state.row ? <DetailRowView person={this.state.row} /> : null
