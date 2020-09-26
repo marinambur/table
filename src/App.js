@@ -5,6 +5,7 @@ import Table from "./table/Table";
 import _ from 'lodash';
 import ReactPaginate from 'react-paginate';
 import TableSearch from './tableSearch/TableSearch';
+import Input from "./input/Input";
 
 class App extends Component {
 
@@ -83,6 +84,7 @@ class App extends Component {
                     this.state.isLoading
                         ? <Loader/>
                         : <React.Fragment>
+                        <Input/>
                             <TableSearch onSearch={this.searchHandler}/>
                             <Table
                                 data={displayData}
