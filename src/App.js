@@ -20,7 +20,7 @@ class App extends Component {
         data: [],
         search: '',
         filteredData: [],
-        sort: 'asc',  // 'desc'
+        sort: 'asc',
         sortField: 'id', // поле по умолчанию
         row: null,
         currentPage: 0
@@ -120,7 +120,7 @@ class App extends Component {
 
     getFilteredData() {
 
-        const {data, search, message} = this.state
+        const {data, search} = this.state
 
         if (!search) {
             return data
@@ -133,9 +133,6 @@ class App extends Component {
             );
         });
         if (!result.length) {
-            //this.setState({message: 'Nothing found, displayed all results'})
-            console.log(message)
-            alert('nothing found, displayed all results')
             return data
         }
         return result
@@ -169,13 +166,18 @@ class App extends Component {
                                     {this.state.message}
                                 </div>
                                 <TableSearch onSearch={this.searchHandler}/>
-                                <Table
-                                    data={displayData}
-                                    onSort={this.onSort}
-                                    sort={this.state.sort}
-                                    sortField={this.state.sortField}
-                                    onRowSelect={this.onRowSelect}
-                                />
+                                <div className={'table__box'}>
+                                    <Table
+                                        data={displayData}
+                                        onSort={this.onSort}
+                                        sort={this.state.sort}
+                                        sortField={this.state.sortField}
+                                        onRowSelect={this.onRowSelect}
+                                    />
+                                    {
+                                        this.state.row ? <DetailRowView person={this.state.row}/> : null
+                                    }
+                                </div>
                             </React.Fragment>
                     }
                     {this.state.data.length > pageSize
@@ -200,9 +202,7 @@ class App extends Component {
                             forcePage={this.state.currentPage}
                         /> : null
                     }
-                    {
-                        this.state.row ? <DetailRowView person={this.state.row}/> : null
-                    }
+
                 </div>
             </>
         );

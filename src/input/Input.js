@@ -6,6 +6,7 @@ export default props => {
 
     return (
         <form>
+            <p>Заполните все поля для добавления пользователя в таблицу.</p>
             <div className="form-row">
                 <div className="form-group col-md-6">
                     <label htmlFor="inputEmail">Email</label>

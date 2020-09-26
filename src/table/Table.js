@@ -1,7 +1,7 @@
 import React from 'react';
-
+import './Table.css';
 export default props => (
-    <table className="table" style={{ cursor: "pointer" }}>
+    <table className="table__form" style={{ cursor: "pointer" }}>
         <thead>
         <tr>
             <th onClick={props.onSort.bind(null, "id")}>
