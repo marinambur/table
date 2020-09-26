@@ -11,13 +11,19 @@ class App extends Component {
 
     state = {
         isLoading: true,
+        inputFirstName: '',
+        inputEmail: '',
+        inputId: '',
+        inputLastName: '',
+        inputPhone: '',
+        message: '',
         data: [],
         search: '',
         filteredData: [],
-        sort: 'asc',  // 'desc'
+        sort: 'asc',
         sortField: 'id', // поле по умолчанию
         row: null,
-        currentPage: 0,
+        currentPage: 0
     }
 
     async componentDidMount() {
@@ -49,8 +55,71 @@ class App extends Component {
         this.setState({search, currentPage: 0})
     }
 
+    handleChange = (event) => {
+        const target = event.target
+        const name = target.id
+        const value = target.value
+        this.setState({[name]: value})
+    }
 
-    getFilteredData(){
+    validateRow(data) {
+        for (const prop in data) {
+            if (!data[prop]) {
+                const text = 'Произошла ошибка при отправки формы. Заполните, пожалуйста, поле ' + prop
+                this.setState({message: text})
+                return
+            }
+        }
+        const text = 'Пользователь с именем ' + data['inputFirstName'] + ' успешно добавлен'
+        this.setState({message: text})
+        setTimeout(
+            () => this.setState({message: ''}),
+            3000
+        );
+        return 'OK'
+    }
+
+    clearForm(data) {
+        for (var prop in data) {
+            this.setState({[prop]: ''})
+        }
+    }
+
+    handleAddRow = (event) => {
+        event.preventDefault()
+        const {data, inputFirstName, inputLastName, inputEmail, inputId, inputPhone} = this.state
+        const formData = {
+            'inputFirstName': inputFirstName,
+            'inputLastName': inputLastName,
+            'inputEmail': inputEmail,
+            'inputId': inputId,
+            'inputPhone': inputPhone
+        }
+        const validate = this.validateRow(formData)
+        if (validate === 'OK') {
+            data.push({
+                'id': inputId,
+                'lastName': inputLastName,
+                'firstName': inputFirstName,
+                'email': inputEmail,
+                'phone': inputPhone,
+                'description': 'eget porta magna in facilisis at placerat consequat placerat pulvinar sapien',
+                'address': {
+                    'city': 'Moscow',
+                    'state': 'RU',
+                    'streetAddress': '51 Paustovskogo street',
+                    'zip': '214304'
+                }
+            })
+            console.log(data)
+            this.clearForm(formData)
+
+        }
+    }
+
+
+    getFilteredData() {
+
         const {data, search} = this.state
 
         if (!search) {
@@ -63,67 +132,79 @@ class App extends Component {
                 item["email"].toLowerCase().includes(search.toLowerCase())
             );
         });
-        if(!result.length){
-            alert('nothing found, displayed all results')
+        if (!result.length) {
             return data
         }
         return result
     }
 
 
-
     render() {
         const pageSize = 10;
 
         const filteredData = this.getFilteredData();
-        console.log(filteredData)
+        //console.log(filteredData)
         const pageCount = Math.ceil(filteredData.length / pageSize)
         const displayData = _.chunk(filteredData, pageSize)[this.state.currentPage]
         return (
-            <div className="container">
-                {
-                    this.state.isLoading
-                        ? <Loader/>
-                        : <React.Fragment>
-                        <Input/>
-                            <TableSearch onSearch={this.searchHandler}/>
-                            <Table
-                                data={displayData}
-                                onSort={this.onSort}
-                                sort={this.state.sort}
-                                sortField={this.state.sortField}
-                                onRowSelect={this.onRowSelect}
-                            />
-                        </React.Fragment>
+            <>
+                <div className="container">
+                    {
+                        this.state.isLoading
+                            ? <Loader/>
+                            : <React.Fragment>
+                                <Input
+                                    onSubmit={this.handleAddRow}
+                                    onChange={this.handleChange}
+                                    firstName={this.state.inputFirstName}
+                                    LastName={this.state.inputLastName}
+                                    Id={this.state.inputId}
+                                    Email={this.state.inputEmail}
+                                    Phone={this.state.inputPhone}
+                                />
+                                <div className={'warning'}>
+                                    {this.state.message}
+                                </div>
+                                <TableSearch onSearch={this.searchHandler}/>
+                                <div className={'table__box'}>
+                                    <Table
+                                        data={displayData}
+                                        onSort={this.onSort}
+                                        sort={this.state.sort}
+                                        sortField={this.state.sortField}
+                                        onRowSelect={this.onRowSelect}
+                                    />
+                                    {
+                                        this.state.row ? <DetailRowView person={this.state.row}/> : null
+                                    }
+                                </div>
+                            </React.Fragment>
+                    }
+                    {this.state.data.length > pageSize
+                        ?
+                        <ReactPaginate
+                            previousLabel={'<'}
+                            nextLabel={'>'}
+                            breakLabel={'...'}
+                            breakClassName={'break-me'}
+                            pageCount={pageCount}
+                            marginPagesDisplayed={2}
+                            pageRangeDisplayed={5}
+                            onPageChange={this.pageChangeHandler}
+                            containerClassName={'pagination'}
+                            activeClassName={'active'}
+                            pageClassName="page-item"
+                            pageLinkClassName="page-link"
+                            previousClassName="page-item"
+                            nextClassName="page-item"
+                            previousLinkClassName="page-link"
+                            nextLinkClassName="page-link"
+                            forcePage={this.state.currentPage}
+                        /> : null
+                    }
 
-
-                }
-                {this.state.data.length > pageSize
-                    ?
-                    <ReactPaginate
-                        previousLabel={'<'}
-                        nextLabel={'>'}
-                        breakLabel={'...'}
-                        breakClassName={'break-me'}
-                        pageCount={pageCount}
-                        marginPagesDisplayed={2}
-                        pageRangeDisplayed={5}
-                        onPageChange={this.pageChangeHandler}
-                        containerClassName={'pagination'}
-                        activeClassName={'active'}
-                        pageClassName="page-item"
-                        pageLinkClassName="page-link"
-                        previousClassName="page-item"
-                        nextClassName="page-item"
-                        previousLinkClassName="page-link"
-                        nextLinkClassName="page-link"
-                        forcePage={this.state.currentPage}
-                    /> : null
-                }
-                {
-                    this.state.row ? <DetailRowView person={this.state.row}/> : null
-                }
-            </div>
+                </div>
+            </>
         );
     }
 }

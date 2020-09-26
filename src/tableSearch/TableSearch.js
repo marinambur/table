@@ -9,7 +9,10 @@ export default props => {
     }
 
     return (
+        <>
+            <p>Введите данные пользователя для поиска. Если такого пользователя нет, будут показаны все данные сразу.</p>
         <div className="input-group mb-3 mt-3">
+
             <div className="input-group-prepend">
                 <button
                     className="btn btn-outline-secondary"
@@ -22,5 +25,7 @@ export default props => {
                 value={value}
             />
         </div>
+            <p>Кликните на строку, справа будут показаны подробные данные пользователя</p>
+            </>
     )
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default ({person}) => (
-    <div>
+    <div className='table__description'>
         <p>Выбран пользователь <b>{person.firstName + ' ' + person.lastName}</b></p>
         <p>
             Описание: <br />
