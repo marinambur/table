@@ -63,7 +63,8 @@ class App extends Component {
                 item["email"].toLowerCase().includes(search.toLowerCase())
             );
         });
-        if(!result){
+        if(!result.length){
+            alert('nothing found, displayed all results')
             return data
         }
         return result

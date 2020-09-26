@@ -33,7 +33,7 @@ export default props => {
 
             </div>
 
-            <button type="submit" className="btn btn-primary">Sign in</button>
+            <button type="submit" className="btn btn-primary">Add user</button>
         </form>
     )
 }
