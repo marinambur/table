@@ -6,7 +6,7 @@ import DetailRowView from './detailRowView/DetailRowView';
 import Table from "./table/Table";
 import _ from 'lodash';
 import ReactPaginate from 'react-paginate';
-
+import TableSearch from './tableSearch/TableSearch';
 class App extends Component {
 
     state ={
@@ -43,6 +43,10 @@ class App extends Component {
         this.setState({currentPage: selected})
     )
 
+    searchHandler = search =>(
+        console.log(search)
+    )
+
 
 
     render() {
@@ -55,13 +59,16 @@ class App extends Component {
                 {
                     this.state.isLoading
                         ? <Loader />
-                        : <Table
-                            data={displayData}
-                            onSort={this.onSort}
-                            sort={this.state.sort}
-                            sortField={this.state.sortField}
-                            onRowSelect={this.onRowSelect}
-                        />
+                        : <React.Fragment>
+                            <TableSearch onSearch={this.searchHandler} />
+                            <Table
+                                data={displayData}
+                                onSort={this.onSort}
+                                sort={this.state.sort}
+                                sortField={this.state.sortField}
+                                onRowSelect={this.onRowSelect}
+                            />
+                        </React.Fragment>
 
 
                 }
