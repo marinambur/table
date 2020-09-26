@@ -12,9 +12,11 @@ class App extends Component {
     state ={
         isLoading: true,
         data: [],
+        filteredData: [],
         sort: 'asc',  // 'desc'
         sortField: 'id', // поле по умолчанию
         row: null,
+        currentPage: 0,
     }
 
     async componentDidMount() {
@@ -37,19 +39,24 @@ class App extends Component {
         this.setState({row})
     )
 
-    pageChangeHandler = page => (
-        console.log(page)
+    pageChangeHandler = ({selected}) => (
+        this.setState({currentPage: selected})
     )
+
+
 
     render() {
         const pageSize = 10;
+
+        //const filteredData = this.getFilteredData();
+        const displayData = _.chunk(this.state.data, pageSize)[this.state.currentPage]
         return (
             <div className="container">
                 {
                     this.state.isLoading
                         ? <Loader />
                         : <Table
-                            data={this.state.data}
+                            data={displayData}
                             onSort={this.onSort}
                             sort={this.state.sort}
                             sortField={this.state.sortField}
@@ -77,6 +84,7 @@ class App extends Component {
                         nextClassName="page-item"
                         previousLinkClassName="page-link"
                         nextLinkClassName="page-link"
+                        forcePage={this.state.currentPage}
                     /> : null
                 }
                 {
