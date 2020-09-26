@@ -11,13 +11,19 @@ class App extends Component {
 
     state = {
         isLoading: true,
+        inputFirstName: '',
+        inputEmail: '',
+        inputId: '',
+        inputLastName: '',
+        inputPhone: '',
+        message: '',
         data: [],
         search: '',
         filteredData: [],
         sort: 'asc',  // 'desc'
         sortField: 'id', // поле по умолчанию
         row: null,
-        currentPage: 0,
+        currentPage: 0
     }
 
     async componentDidMount() {
@@ -49,9 +55,52 @@ class App extends Component {
         this.setState({search, currentPage: 0})
     }
 
+    handleChange = (event) => {
+        const target = event.target
+        const name = target.id
+        const value = target.value
+        this.setState({[name]: value})
+    }
+
+    validateRow(data) {
+        for (const prop in data) {
+            if (!data[prop]) {
+                const text = 'Произошла ошибка при отправки формы. Заполните, пожалуйста, поле ' + prop
+                this.setState({message: text})
+                return
+            }
+        }
+        const text = 'Пользователь с именем ' + data['inputFirstName'] + ' успешно добавлен'
+        this.setState({message: text})
+        setTimeout(
+            () => this.setState({ message: '' }),
+            3000
+        );
+        return 'OK'
+    }
+
+    clearForm(data) {
+        for (const prop in data) {
+            this.setState({[prop]: ''})
+        }
+    }
+
+    handleAddRow = (event) => {
+        event.preventDefault()
+        const {data, inputFirstName, inputLastName, inputEmail, inputId, inputPhone} = this.state
+        const formData = {'inputFirstName': inputFirstName, 'inputLastName': inputLastName, 'inputEmail': inputEmail, 'inputId': inputId, 'InputPhone': inputPhone }
+        const validate = this.validateRow(formData)
+        if (validate === 'OK') {
+            data.push({'id': inputId, 'lastName': inputLastName, 'firstName': inputFirstName, 'email': inputEmail, 'phone': inputPhone})
+            this.clearForm(formData)
+        }
+    }
+
+
 
     getFilteredData(){
-        const {data, search} = this.state
+
+        const {data, search, message} = this.state
 
         if (!search) {
             return data
@@ -64,6 +113,8 @@ class App extends Component {
             );
         });
         if(!result.length){
+            //this.setState({message: 'Nothing found, displayed all results'})
+            console.log(message)
             alert('nothing found, displayed all results')
             return data
         }
@@ -76,16 +127,29 @@ class App extends Component {
         const pageSize = 10;
 
         const filteredData = this.getFilteredData();
-        console.log(filteredData)
+        //console.log(filteredData)
         const pageCount = Math.ceil(filteredData.length / pageSize)
         const displayData = _.chunk(filteredData, pageSize)[this.state.currentPage]
+        console.log(displayData)
         return (
+            <>
             <div className="container">
                 {
                     this.state.isLoading
                         ? <Loader/>
                         : <React.Fragment>
-                        <Input/>
+                        <Input
+                            onSubmit={this.handleAddRow}
+                            onChange={this.handleChange}
+                            firstName={this.state.inputFirstName}
+                            LastName={this.state.inputLastName}
+                            Id={this.state.inputId}
+                            Email={this.state.inputEmail}
+                            Phone={this.state.inputPhone}
+                        />
+                        <div className={'warning'}>
+                            {this.state.message}
+                        </div>
                             <TableSearch onSearch={this.searchHandler}/>
                             <Table
                                 data={displayData}
@@ -95,8 +159,6 @@ class App extends Component {
                                 onRowSelect={this.onRowSelect}
                             />
                         </React.Fragment>
-
-
                 }
                 {this.state.data.length > pageSize
                     ?
@@ -124,6 +186,7 @@ class App extends Component {
                     this.state.row ? <DetailRowView person={this.state.row}/> : null
                 }
             </div>
+                </>
         );
     }
 }
