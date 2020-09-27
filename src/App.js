@@ -68,6 +68,40 @@ class App extends Component {
                 const text = 'Произошла ошибка при отправки формы. Заполните, пожалуйста, поле ' + prop
                 this.setState({message: text})
                 return
+            } else if (prop === 'inputEmail') {
+                if (data[prop].match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
+                } else {
+                    const text = 'Укажите настоящий email '
+                    this.setState({message: text})
+                    return
+                }
+
+            } else if (prop === 'inputFirstName') {
+                if (data[prop].match(/^[A-Za-zА-Яа-я\s-]+$/)) {
+                } else {
+                    const text = 'Укажите настоящее имя '
+                    this.setState({message: text})
+                    return
+                }
+
+            } else if (prop === 'inputLastName') {
+                if (data[prop].match(/^[A-Za-zА-Яа-я\s-]+$/)) {
+                } else {
+                    const text = 'Укажите настоящую фамилию '
+                    this.setState({message: text})
+                    return
+                }
+
+            } else if (prop === 'inputPhone') {
+                if (data[prop].match(/^((8|\+7)[- ]?)?(\(?\d{3}\)?[- ]?)?[\d\- ]{7,10}$/
+                )
+                ) {
+                } else {
+                    const text = 'Укажите настоящий телефон'
+                    this.setState({message: text})
+                    return
+                }
+
             }
         }
         const text = 'Пользователь с именем ' + data['inputFirstName'] + ' успешно добавлен'
@@ -111,7 +145,6 @@ class App extends Component {
                     'zip': '214304'
                 }
             })
-            console.log(data)
             this.clearForm(formData)
 
         }
@@ -162,7 +195,7 @@ class App extends Component {
                                     Email={this.state.inputEmail}
                                     Phone={this.state.inputPhone}
                                 />
-                                <div className={'warning'}>
+                                <div className={'table__warning '}>
                                     {this.state.message}
                                 </div>
                                 <TableSearch onSearch={this.searchHandler}/>
